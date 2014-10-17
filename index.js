@@ -1,20 +1,3 @@
-/*
-- Ask gdb about investing
-- Have community or odesk workers tag the top 1000 while emailing them. Also allow custom search.
-- Pay an odesk worker to email top 5000 github library author's the link to their results Page. tell them to susbcribe for further alerts
-- Adoption/disadoption charts
-- tell seajs and requirejs that you now depend on them and that they shouldn't drop the module exposure cache
-- think through doing a search for [LIB] = require("") static regex search (or use Esprima) if we detect keyword matches for browserify/webpack/cujo
-	- module loaders, other than requirejs, that don't expose the loaded libs will have non-default-globaled libraries completely hidden
-	- ask them to expose under window.__proto__...
-
-- requirejs can be hidden too, although this is rare
-- jquery can be made hidden too; in which case we rely on requirejs loads
-- we're only looking at homepages
-- we don't crawl web-based mobile apps
-- presumed phantom 1.0 issues: doesn't work with wordpress.com, c9.io, famo.us, twitch.tv, kickstarter.com (because of images being blocked). about 1% of sites. doesn't connect to another 1%., loybio.com (somehow an ext. script error is being caught within our exec code -- maybe just async timing)
-*/
-
 /****************
     Libraries
 ****************/
