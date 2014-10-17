@@ -1,0 +1,12 @@
+{
+	"name": "crawler",
+	"version": "1.0.0",
+	"dependencies": {
+		"url": "latest",
+		"phantom": "latest",
+		"jquery": "latest",
+		"jsdom": "latest",
+		"colors": "latest",
+		"request": "latest"
+	}
+}
