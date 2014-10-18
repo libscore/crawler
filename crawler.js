@@ -7,7 +7,7 @@ var jQuery = require("jquery")(require("jsdom").jsdom().parentWindow);
 var URL = require("url");
 var Phantom = require("phantom");
 var Colors = require("colors");
-var Request = require("request");
+var FS = require("fs");
 
 /*****************
     Constants
@@ -22,8 +22,6 @@ var PHANTOM_RESOURCE_TIMEOUT = 3000;
 /* Time (in ms) to wait after DOMContentLoaded for asynchronous scripts to load. */
 /* Note: There's no foolproof way of doing this, so we choose 3000ms, which sites load within 99% of the time. */
 var PHANTOM_EVALUATE_DELAY = 3000;
-/* Time (in ms) to await a response from the API endpoint (where we submit data to) before failing out. */
-var ENDPOINT_RESPONSE_TIMEOUT = 10000;
 /* To avoid crawler sabotage (sites that cause it to run indefinitely), we forecfully exit at some point. */
 var GLOBAL_TIMEOUT = 30000;
 
@@ -48,6 +46,16 @@ setTimeout(function() {
 }, GLOBAL_TIMEOUT);
 
 /*****************
+    Arguments
+*****************/
+
+var Arguments = {
+		url: process.argv[2],
+		rank: process.argv[3],
+		isDump: typeof process.argv[3] !== undefined
+	};
+
+/*****************
     Utilities
 *****************/
 
@@ -64,20 +72,10 @@ function out (success, stage, message) {
 		}
 	} else {
 		console.log((stage + ": " + JSON.stringify(message)).red.inverse);
-		/* Ensure all errors bubble to an exit code of 1 so that the process runner can react accordingly. */
+		/* Ensure all errors bubble to an exit code of 1 so that the process runner can respond accordingly. */
 		process.exit(1);
 	}
 }
-
-/*****************
-    Arguments
-*****************/
-
-var Arguments = {
-		url: process.argv[2],
-		rank: process.argv[3],
-		endpoint: process.argv[4] || "https://libscore.herokuapp.com/api/v1/secret/"
-	};
 
 /*****************
     Baselines
@@ -108,7 +106,6 @@ function evaluateBaselines (windowObj) {
      Page
 **************/
 
-/* Allow skipping of mobile user agent pass. */
 var Page = {
 		url: Arguments.url || "julian.local:5757/velocity/bugfix.html",
 		/* Keep track of whether the page is currently going through a mobile useragent pass. */
@@ -403,7 +400,7 @@ function filterPageData (data) {
 
 		data.modules.forEach(function(val) {
 			/* If we match a module that has already been exposed on jQuery or window, drop it to avoid duplicates;
-			   the net effect of our module sniffing is to find modules that are hidden inside a local scope. */
+			   the goal of our module sniffing is to find modules that are hidden inside a local scope. */
 			var isUnique = true;
 
 			for (var i = 0; i < 2; i++) {
@@ -483,30 +480,20 @@ function reportPageData () {
 		});
 	});
 
-	if (Arguments.rank && Arguments.endpoint) {
-		Request(
-			{
-				url: Arguments.endpoint,
-				method: "POST",
-		    	json: { 
-			    	url: Arguments.url,
-			    	rank: Arguments.rank,
-			    	libs: Page.libs
-			    },
-			    timeout: ENDPOINT_RESPONSE_TIMEOUT
-			},
-		    function (error, response, body) {
-		        if (!error && response.statusCode == 201) {
-					out(true, "endpoint", "response received");
+	if (Arguments.isDump) {
+		var dumpData = JSON.stringify({ url: Arguments.url, rank: Arguments.rank, libs: Page.libs });
 
-					reportPageDataDone();
-		        } else {
-		        	out(false, "endpoint", response.statusCode + " response")
-		        }
-		    }
-		);
+		FS.appendFile("dump.json", dumpData + "\n", function(error) {
+			if (error) {
+		        out(false, "dump", error);
+			} else {
+				out(true, "dump", "written");
+
+				reportPageDataDone();
+			}
+		});
 	} else {
-		out(true, "endpoint", "not detected")
+		out(true, "dump", "not requested");
 		reportPageDataDone();
 	}
 }

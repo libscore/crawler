@@ -6,7 +6,6 @@
 		"phantom": "latest",
 		"jquery": "latest",
 		"jsdom": "latest",
-		"colors": "latest",
-		"request": "latest"
+		"colors": "latest"
 	}
 }
