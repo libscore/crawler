@@ -1,14 +1,19 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"strings"
 )
 
+// CLI flags
+var siteFlag string
+
+// Other global stuff
 const NUM_WORKERS = 20
-const NUM_SITES = 100
+const STUB_SITE = "www.foo.com"
 
 var failedSites []string
 
@@ -54,13 +59,19 @@ func work(siteJobs <-chan string, res chan<- string) {
 func crawlSites(sites string) {
 	fmt.Println("Executing in: " + pwd())
 
-	siteJobs := make(chan string, NUM_SITES)
-	out := make(chan string, NUM_SITES)
+	siteJobs := make(chan string, 1000000)
+	out := make(chan string, 1000000)
 	failedSites = make([]string, 0)
 
 	// Kick off worker pool
 	for i := 1; i <= NUM_WORKERS; i++ {
 		go work(siteJobs, out)
+	}
+
+	var isAppending bool
+
+	if siteFlag == STUB_SITE {
+		isAppending = true
 	}
 
 	totalSites := 0
@@ -69,15 +80,22 @@ func crawlSites(sites string) {
 		// Could hit \n at the end, too lazy to fix right now
 		if len(splitLine) == 2 {
 			_, site := splitLine[0], splitLine[1]
-			siteJobs <- site
-			totalSites++
+
+			if siteFlag == site {
+				isAppending = true
+			}
+
+			if isAppending {
+				siteJobs <- site
+				totalSites++
+			}
 		}
 	}
 
 	close(siteJobs)
 
 	// Wait for all the jobs to flush
-	for i := 0; i < NUM_SITES; i++ {
+	for i := 0; i < totalSites; i++ {
 		<-out
 	}
 
@@ -110,8 +128,14 @@ func crawlSites(sites string) {
 	fmt.Println("\tFailed sites:", failedSites)
 }
 
+func bindFlags() {
+	flag.StringVar(&siteFlag, "site", STUB_SITE, "Pass a site as a starting index")
+	flag.Parse()
+}
+
 func main() {
 	fmt.Println("Starting crawl...")
 	sites := slurpSitesFile()
+	bindFlags()
 	crawlSites(sites)
 }
