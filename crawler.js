@@ -400,8 +400,21 @@ function filterPageData (data) {
 
 		data.modules.forEach(function(val) {
 			/* If we match a module that has already been exposed on jQuery or window, drop it to avoid duplicates;
-			   the goal of our module sniffing is to find modules that are hidden inside a local scope. */
+			   the goal of our module sniffing is to find modules that are hidden inside an anonymous scope and 
+			   don't reveal themselves anywhere. */
 			var isUnique = true;
+
+			/* Find out whether the module name is prefixed with "jquery." so we can push this variable to our jQuery
+			   array instead of our modules array (which winds up being interpreted as global variables by the backend). */
+			var rjQueryPlugin = /^jQuery\./i,
+				isjQueryPlugin = false;
+
+			if (rjQueryPlugin.test(val)) {
+				isjQueryPlugin = true;
+
+				/* Strip off the "jquery." prefix so that the value can be compared against the current jQuery array items. */
+				val = val.replace(rjQueryPlugin, "");
+			}
 
 			for (var i = 0; i < 2; i++) {
 				var testVal = (i === 1) ? val : val.toLowerCase();
@@ -422,7 +435,15 @@ function filterPageData (data) {
 			}
 
 			if (isUnique) {
-				Page.libs.modules[device].push(val);
+				if (isjQueryPlugin) {
+					/* (We get to this point when a jQuery plugin has been required without a globally exposed jQuery global.) 
+					   When transferring this item from the modules list to the jQuery list, we classify the variable as both a
+					   jQuery utility and a jQuery fn variable since we have no way of actually determining which it really is. */
+					Page.libs.jQuery[device].push("$." + val);
+					Page.libs.jQuery[device].push("$.fn." + val);
+				} else {
+					Page.libs.modules[device].push(val);
+				}
 			} else {
 				out(true, "module clean", "dropped non-unique module name: " + val);
 			}
@@ -471,10 +492,10 @@ function reportPageData () {
 
 	jQuery.each(Page.libs, function (dataType, data) {
 		jQuery.each(data, function(deviceType, deviceData) {
-			/* Reduce all arrays to unique matches. */
+			/* Reduce all arrays to unique matches, and truncate them to 75 results max (in case someone is trying to sabotage our results). */
 			Page.libs[dataType][deviceType] = Page.libs[dataType][deviceType].filter(function(val, i, self) { 
 		    	return self.indexOf(val) === i;
-			});
+			}).slice(0, 75);
 
 			out(true, dataType + " [" + deviceType + "]", Page.libs[dataType][deviceType].length ? Page.libs[dataType][deviceType] : "N/A");
 		});
