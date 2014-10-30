@@ -17,8 +17,8 @@ const STUB_SITE = "www.foo.com"
 
 var failedSites []string
 
-func crawlerCmd(site string) (string, string, string) {
-	return "node", "crawler.js", site
+func crawlerCmd(site string, siteRank int) (string, string, string) {
+	return "node", "crawler.js", site, siteRank
 }
 
 func slurpSitesFile() string {
@@ -40,8 +40,12 @@ func pwd() string {
 }
 
 func work(siteJobs <-chan string, res chan<- string) {
+	siteRank := 0;
+
 	for site := range siteJobs {
-		out, err := exec.Command(crawlerCmd(site)).Output()
+		siteRank++;
+
+		out, err := exec.Command(crawlerCmd(site, siteRank)).Output()
 		res <- "OK"
 
 		if err != nil {

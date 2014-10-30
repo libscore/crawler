@@ -52,7 +52,7 @@ setTimeout(function() {
 var Arguments = {
 		url: process.argv[2],
 		rank: process.argv[3],
-		isDump: typeof process.argv[3] !== undefined
+		isDump: !!process.argv[3]
 	};
 
 /*****************
@@ -230,7 +230,7 @@ function evaluatePageData () {
 							   subfolder names. */
 							if (isJavaScriptFile && containsWhitelistedSubfolder.test(moduleName)) {
 								/* Extract just the file name from the path and remove the extension. */
-								moduleName = moduleName.split("/")[moduleName.split("/").length - 1].split(/\.js$/i)[0];
+								moduleName = moduleName.split("/")[moduleName.split("/").length - 1].split(/(\.min)?\.js$/i)[0];
 								moduleNamePassed = true;
 							}
 						} else if (requirejsContexts) {
@@ -449,6 +449,11 @@ function filterPageData (data) {
 			}
 		});
 
+		/* For the time being, we're going to treat all unique, non-jQuery-prefixed modules as global variables. The downside is that
+		   uncaught jQuery modules will convert into incorrect global variable names. But this ultimately makes data lookups easier
+		   so that we don't have to segregate RequireJS module matches as a separate response type with a "lesser" consideration of validity. */
+		Page.libs.window[device] = Page.libs.window[device].concat(Page.libs.modules[device]);
+
 		/**************
 		    Scripts
 		**************/
@@ -489,6 +494,8 @@ function reportPageData () {
 		out(true, "done", (Date.now() - startTime)/1000 + "s");
 		process.exit();
 	}
+
+	delete Page.libs.modules;
 
 	jQuery.each(Page.libs, function (dataType, data) {
 		jQuery.each(data, function(deviceType, deviceData) {
