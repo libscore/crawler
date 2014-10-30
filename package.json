@@ -1,12 +1,13 @@
 {
-	"name": "crawler",
-	"version": "1.0.0",
-	"dependencies": {
-		"url": "latest",
-		"async": "latest",
-		"phantom": "latest",
-		"jquery": "latest",
-		"jsdom": "latest",
-		"colors": "latest"
-	}
+  "name": "crawler",
+  "version": "1.0.0",
+  "dependencies": {
+    "async": "latest",
+    "colors": "latest",
+    "jquery": "latest",
+    "jsdom": "latest",
+    "phantom": "latest",
+    "url": "latest",
+    "weak": "^0.3.3"
+  }
 }
