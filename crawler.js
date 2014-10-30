@@ -667,4 +667,5 @@ function disconnectFromPage () {
 
 var startTime = Date.now();
 
+out(true, "Running");
 connectToPage();

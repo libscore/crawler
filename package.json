@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"dependencies": {
 		"url": "latest",
+		"async": "latest",
 		"phantom": "latest",
 		"jquery": "latest",
 		"jsdom": "latest",
