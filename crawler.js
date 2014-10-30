@@ -508,8 +508,17 @@ function reportPageData () {
 		});
 	});
 
+	/* Clean up data structure for backend ingestion. */
+	var Libs = {
+		desktop: [],
+		mobile: []
+	};
+
+	Libs.desktop = Libs.desktop.concat(Page.libs["window"]["desktop"]).concat(Page.libs["jQuery"]["desktop"]);
+	Libs.mobile = Libs.mobile.concat(Page.libs["window"]["mobile"]).concat(Page.libs["jQuery"]["mobile"]);
+
 	if (Arguments.isDump) {
-		var dumpData = JSON.stringify({ url: Arguments.url, rank: Arguments.rank, libs: Page.libs });
+		var dumpData = JSON.stringify({ url: Arguments.url, rank: Arguments.rank, data: { libs: Libs, scripts: Page.libs.scripts } });
 
 		FS.appendFile("dump.json", dumpData + "\n", function(error) {
 			if (error) {
