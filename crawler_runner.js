@@ -7,19 +7,13 @@ var Colors = require("colors");
 var Async = require("async");
 
 /*****************
-    Constants
-*****************/
-
-var CRAWLER_CONCURRENCY = 8;
-var STUB_SITE = "www.example.com";
-
-/*****************
     Arguments
 *****************/
 
 var Arguments = {
-		sitesFile: process.argv[2],
-		siteOffset: process.argv[3]
+		concurrency: process.argv[2],
+		sitesFile: process.argv[3],
+		siteOffset: process.argv[4]
 	};
 
 /*****************
@@ -114,7 +108,7 @@ function spawnCrawls (sites) {
 		sites = sitesSliced;
 	} 
 
-	Async.eachLimit(sites, CRAWLER_CONCURRENCY, crawl, function(error) {
+	Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
 		if (error) {
 			throw new Error(error);
 		}
@@ -126,7 +120,7 @@ function spawnCrawls (sites) {
 			sites = failedSites.slice(0);
 			failedSites = [];
 
-			Async.eachLimit(sites, CRAWLER_CONCURRENCY, crawl, function() {
+			Async.eachLimit(sites, Arguments.concurrency, crawl, function() {
 				reportCrawlsDone();
 			});
 		} else {
