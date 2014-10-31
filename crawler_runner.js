@@ -6,12 +6,14 @@ var FS = require("fs");
 var Colors = require("colors");
 var Async = require("async");
 var kue = require('kue');
+var cluster = require('cluster');
 
 /*****************
     Queue
 *****************/
 
 var jobs = kue.createQueue();
+var clusterWorkerSize = require('os').cpus().length;
 
 /*****************
     Arguments
@@ -135,31 +137,39 @@ function spawnCrawls (sites) {
 		sites = sites.slice(Arguments.siteOffset - 1);
 	} 
 	*/
-	jobs.process('website', function(job, done){
-	//Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
-		console.log(job.data);
-		crawl(job.data, done);
-		/*
-		if (error) {
-			throw new Error(error);
-		}
+	if (cluster.isMaster) {
+	  for (var i = 0; i < clusterWorkerSize; i++) {
+	    cluster.fork();
+	  }
+	} else {
 
-		if (failedSites.length) {
-			var retryConcurrency = Math.floor(Arguments.concurrency * 0.75);
+		jobs.process('website', 10, function(job, done){
+		//Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
+			console.log(job.data);
+			crawl(job.data, done);
+			/*
+			if (error) {
+				throw new Error(error);
+			}
 
-			out(true, "Failed sites on first try", failedSites.length);
-			out(true, "Re-crawling failed sites with " + retryConcurrency + " concurrency...");
+			if (failedSites.length) {
+				var retryConcurrency = Math.floor(Arguments.concurrency * 0.75);
 
-			sites = failedSites.slice(0);
-			failedSites = [];
+				out(true, "Failed sites on first try", failedSites.length);
+				out(true, "Re-crawling failed sites with " + retryConcurrency + " concurrency...");
 
-			Async.eachLimit(sites, retryConcurrency, crawl, function() {
+				sites = failedSites.slice(0);
+				failedSites = [];
+
+				Async.eachLimit(sites, retryConcurrency, crawl, function() {
+					reportCrawlsDone();
+				});
+			} else {
 				reportCrawlsDone();
-			});
-		} else {
-			reportCrawlsDone();
-		}*/
-	});
+			}*/
+		});
+	}
+
 }
 
 /****************
