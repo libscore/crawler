@@ -20,7 +20,8 @@ var jobs = kue.createQueue();
 var Arguments = {
 		concurrency: process.argv[2],
 		sitesFile: process.argv[3],
-		siteOffset: process.argv[4]
+		siteOffsetStart: process.argv[4],
+		siteOffsetEnd: process.argv[5]
 	};
 
 /*****************
@@ -73,6 +74,10 @@ function processSitesFile () {
 					sites.push({ url: lineData[1], rank: lineData[0] });
 				}
 			}
+			
+			if (Arguments.siteOffsetStart) {
+				sites = sites.slice(Arguments.siteOffsetStart - 1, Arguments.siteOffsetEnd);
+			} 
 
 			totalSites = sites.length;
 
