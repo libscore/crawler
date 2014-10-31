@@ -23,9 +23,8 @@ async.eachLimit(lines, 10, function (line, done) {
 }, function(err){
     // if any of the saves produced an error, err would equal that error
     var totalSites = lines.length;
-console.log(totalSites)
+  console.log(totalSites)
 });
-}
 
 
 
