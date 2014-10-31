@@ -20,6 +20,8 @@ var Arguments = {
     Variables
 *****************/
 
+var CRAWL_TIMEOUT = 30000;
+
 var siteOffsetReached = false,
 	sites = [],
 	totalSites = 0,
@@ -76,14 +78,31 @@ function processSitesFile () {
 function crawl (site, callback) {
 	var spawn = require("child_process").spawn;
 	var crawler = spawn("node", [ "crawler.js", site.url, site.rank ]);
+	var finished = false;
+
+	setTimeout(function() {
+		if (!finished) {
+			require('child_process').exec("kill -9 " + crawler.pid);
+		}
+	}, CRAWL_TIMEOUT);
 
 	crawler.on("close", function (code) {
-		if (code === 1) {
-			out(false, "Crawl", "failed " + site.url);
+		finished = true;
 
-			failedSites.push(site);
-		} else {
-			out(true, "Crawl", "succeeded " + site.url);
+		switch (code) {
+			case 0:
+				out(true, "Crawl", "succeeded " + site.url);
+				break;
+
+			case 1:
+				out(false, "Crawl", "failed " + site.url);
+				failedSites.push(site);
+				break;
+
+			case null:
+				out("false", "Crawl", "failed (error: killed) " + site.url);
+				failedSites.push(site);
+				break;
 		}
 
 		callback();

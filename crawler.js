@@ -22,8 +22,6 @@ var PHANTOM_RESOURCE_TIMEOUT = 3000;
 /* Time (in ms) to wait after DOMContentLoaded for asynchronous scripts to load. */
 /* Note: There's no foolproof way of doing this, so we choose 3000ms, which sites load within 99% of the time. */
 var PHANTOM_EVALUATE_DELAY = 3000;
-/* To avoid crawler sabotage (sites that cause it to run indefinitely), we forecfully exit at some point. */
-var GLOBAL_TIMEOUT = 30000;
 
 /* Deprecated jQuery properties for both the jQuery global and the fn method. */
 /* Note: Updated as of jQuery 2.1.1. */
@@ -40,10 +38,6 @@ var JQUERY_DEPRECATED = {
 
 /* Terminate the connected Phantom instance when node exits abruptly. */
 process.on("exit", disconnectFromPage);
-
-setTimeout(function() {
-	throw new Error ("global timeout exceeded");
-}, GLOBAL_TIMEOUT);
 
 /*****************
     Arguments
