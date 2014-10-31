@@ -147,7 +147,7 @@ function spawnCrawls (sites) {
 	  }
 	} else {
 
-		jobs.process('website', 5, function(job, done){
+		jobs.process('website', 3, function(job, done){
 		//Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
 			console.log(job.data);
 			crawl(job.data, done);
