@@ -13,7 +13,8 @@ var Async = require("async");
 var Arguments = {
 		concurrency: process.argv[2],
 		sitesFile: process.argv[3],
-		siteOffset: process.argv[4]
+		siteOffsetStart: process.argv[4],
+		siteOffsetEnd: process.argv[5]
 	};
 
 /*****************
@@ -66,6 +67,10 @@ function processSitesFile () {
 					sites.push({ url: lineData[1], rank: lineData[0] });
 				}
 			}
+			
+			if (Arguments.siteOffsetStart) {
+				sites = sites.slice(Arguments.siteOffsetStart - 1, Arguments.siteOffsetEnd);
+			} 
 
 			totalSites = sites.length;
 
@@ -114,10 +119,6 @@ function spawnCrawls (sites) {
 		out(true, "Stats", (totalSites - failedSites.length) + "/" + totalSites + " sites succeeded");
 		out(true, "Done");
 	}
-
-	if (Arguments.siteOffset) {
-		sites = sites.slice(Arguments.siteOffset - 1);
-	} 
 
 	Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
 		if (error) {
