@@ -4,6 +4,7 @@
   "dependencies": {
     "async": "latest",
     "bull": "^0.1.10",
+    "cluster": "^0.7.7",
     "colors": "latest",
     "jquery": "latest",
     "jsdom": "latest",
