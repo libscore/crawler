@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "dependencies": {
     "async": "latest",
+    "bull": "^0.1.10",
     "colors": "latest",
     "jquery": "latest",
     "jsdom": "latest",
+    "kue": "^0.8.9",
     "phantom": "latest",
+    "redis": "^0.12.1",
     "url": "latest",
     "weak": "^0.3.3"
   }

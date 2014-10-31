@@ -5,6 +5,13 @@
 var FS = require("fs");
 var Colors = require("colors");
 var Async = require("async");
+var kue = require('kue');
+
+/*****************
+    Queue
+*****************/
+
+var jobs = kue.createQueue();
 
 /*****************
     Arguments
@@ -91,20 +98,24 @@ function crawl (site, callback) {
 		switch (code) {
 			case 0:
 				out(true, "Crawl", "succeeded " + site.url);
+			callback();
+
 				break;
 
 			case 1:
 				out(false, "Crawl", "failed " + site.url);
-				failedSites.push(site);
+				//failedSites.push(site);
+				callback('Crawl failed');
+
 				break;
 
 			case null:
 				out("false", "Crawl", "failed (error: killed) " + site.url);
-				failedSites.push(site);
+				callback('Crawl failed - killed');
+				//failedSites.push(site);
 				break;
 		}
 
-		callback();
 	});
 }
 
@@ -114,12 +125,16 @@ function spawnCrawls (sites) {
 		out(true, "Stats", (totalSites - failedSites.length) + "/" + totalSites + " sites succeeded");
 		out(true, "Done");
 	}
-
+	/*
 	if (Arguments.siteOffset) {
 		sites = sites.slice(Arguments.siteOffset - 1);
 	} 
-
-	Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
+	*/
+	jobs.process('website', function(job, done){
+	//Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
+		console.log(job.data);
+		crawl(job.data, done);
+		/*
 		if (error) {
 			throw new Error(error);
 		}
@@ -138,7 +153,7 @@ function spawnCrawls (sites) {
 			});
 		} else {
 			reportCrawlsDone();
-		}
+		}*/
 	});
 }
 
