@@ -20,7 +20,7 @@ var Arguments = {
     Variables
 *****************/
 
-var CRAWL_TIMEOUT = 30000;
+var CRAWL_TIMEOUT = 60000;
 
 var siteOffsetReached = false,
 	sites = [],
@@ -133,13 +133,15 @@ function spawnCrawls (sites) {
 		}
 
 		if (failedSites.length) {
+			var retryConcurrency = Math.floor(Arguments.concurrency * 0.75);
+
 			out(true, "Failed sites on first try", failedSites.length);
-			out(true, "Re-crawling failed sites...");
+			out(true, "Re-crawling failed sites with " + retryConcurrency + " concurrency...");
 
 			sites = failedSites.slice(0);
 			failedSites = [];
 
-			Async.eachLimit(sites, Arguments.concurrency, crawl, function() {
+			Async.eachLimit(sites, retryConcurrency, crawl, function() {
 				reportCrawlsDone();
 			});
 		} else {
