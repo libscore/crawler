@@ -1,5 +1,5 @@
 var fs = require('fs');
-
+var async = require('async');
 
 var kue = require('kue')
   , jobs = kue.createQueue();
@@ -8,7 +8,7 @@ var data = fs.readFileSync('sites.txt', 'utf8');
 
 var lines = data.split("\n");
 var a = 0;
-async.eachLimit(lines, 10, function (line, done) {
+async.eachLimit(lines, 50, function (line, done) {
   a++;
   if (/,/.test(line)) {         
     var lineData = line.split(",");
