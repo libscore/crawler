@@ -143,7 +143,7 @@ function spawnCrawls (sites) {
 	  }
 	} else {
 
-		jobs.process('website', 10, function(job, done){
+		jobs.process('website', 4, function(job, done){
 		//Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
 			console.log(job.data);
 			crawl(job.data, done);
