@@ -22,8 +22,7 @@ var Arguments = {
 
 var CRAWL_TIMEOUT = 60000;
 
-var siteOffsetReached = false,
-	sites = [],
+var sites = [],
 	totalSites = 0,
 	failedSites = [];
 
@@ -117,14 +116,7 @@ function spawnCrawls (sites) {
 	}
 
 	if (Arguments.siteOffset) {
-		for (var i = 0; i < sites.length; i++) {
-			if (sites[i].url === Arguments.siteOffset) {
-				var sitesSliced = sites.slice(sites[i]);
-				break;
-			}
-		}
-
-		sites = sitesSliced;
+		sites = sites.slice(Arguments.siteOffset - 1);
 	} 
 
 	Async.eachLimit(sites, Arguments.concurrency, crawl, function(error) {
