@@ -12,7 +12,7 @@ async.eachLimit(lines, 50, function (line, done) {
   a++;
   if (/,/.test(line)) {         
     var lineData = line.split(",");
-    jobs.create('website', { url: lineData[1], rank: lineData[0] }).attempts(10).backoff( {delay: 60*1000, type:'fixed'} ).save(function(){
+    jobs.create('website', { url: lineData[1], rank: lineData[0] }).attempts(3).backoff( {delay: 60*1000, type:'fixed'} ).save(function(){
       console.log(a);
       done();
 
