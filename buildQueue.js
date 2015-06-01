@@ -26,6 +26,7 @@ async.eachLimit(lines, 50, function (line, done) {
   console.log(totalSites)
 });
 
+kue.app.listen(3000);
 
 
 //websiteQueue.process(function(job, done){
