@@ -7,7 +7,7 @@
     "cluster": "^0.7.7",
     "colors": "latest",
     "jquery": "latest",
-    "jsdom": "latest",
+    "jsdom": "^3.0.0",
     "kue": "^0.8.9",
     "phantom": "latest",
     "redis": "^0.12.1",
