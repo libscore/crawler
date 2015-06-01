@@ -14,7 +14,7 @@ var cluster = require('cluster');
 
 var jobs = kue.createQueue({
 	redis: {
-		host: '188.226.146.102'
+		host: 'crawl-queue'
 	}
 });
 var clusterWorkerSize = require('os').cpus().length;
