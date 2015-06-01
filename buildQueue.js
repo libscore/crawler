@@ -10,7 +10,7 @@ var lines = data.split("\n");
 var a = 0;
 async.eachLimit(lines, 50, function (line, done) {
   a++;
-  if (/,/.test(line)) {         
+  if (/,/.test(line)) {
     var lineData = line.split(",");
     jobs.create('website', { url: lineData[1], rank: lineData[0] }).attempts(3).backoff( {delay: 60*1000, type:'fixed'} ).save(function(){
       console.log(a);

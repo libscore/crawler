@@ -109,23 +109,23 @@ var Page = {
 		libs: {
 			/* Third-party global functions (or objects that contain functions) that either start
 			   with a capital or have a .version property. */
-			window: { 
+			window: {
 				mobile: [],
 				desktop: []
 			},
 			/* Third-party jQuery utility and $.fn functions. */
-			jQuery: { 
+			jQuery: {
 				mobile: [],
 				desktop: []
 			},
 			/* Cross-domain, ./, lib(s)/, plugin(s)/, vendor(s)/, or external(s)/ modules required via
 			   RequireJS that don't end in .css, .json, or .html. */
-			modules: { 
+			modules: {
 				mobile: [],
 				desktop: []
 			},
 			/* Cross-domain scripts that weren't injected by RequireJS. */
-			scripts: { 
+			scripts: {
 				mobile: [],
 				desktop: []
 			}
@@ -210,7 +210,7 @@ function evaluatePageData () {
 					var isInSubfolder = moduleName.match(/\//g);
 					/* If the module is located in a subdirectory, only accept it if the subdirectory name is commonly associated with vendor libraries. */
 					/* Note: Manual tests have shown that this covers 98%+ of module directory configurations. Chances of match misses is certainly
-					   non-zero, but false positive occurrences are hugely reduced. We accept this tradeoff. */ 
+					   non-zero, but false positive occurrences are hugely reduced. We accept this tradeoff. */
 					var whitelistedSubfolder = "(lib|vendor|plugin|external)s?";
 					var containsWhitelistedSubfolder = new RegExp("\\/" + whitelistedSubfolder + "\\/", "i");
 					var isInWhitelistedSubfolder = new RegExp("^(js\\/)?" + whitelistedSubfolder + "\\/", "i");
@@ -219,7 +219,7 @@ function evaluatePageData () {
 						/* Note: SeaJS acts as an external script loader, not a pre-processed bundle loader. */
 						if (seajsModules) {
 							/* For SeaJS, accept all external script links that contain a whitelisted vendor subfolder. */
-							/* Note: Unlike with RequireJS, where we can efficiently remove false positives due to being strict about vender subfolder 
+							/* Note: Unlike with RequireJS, where we can efficiently remove false positives due to being strict about vender subfolder
 							   hierarchy, we have to be looser with full-path external links since they aren't relative and often contain arbitrary
 							   subfolder names. */
 							if (isJavaScriptFile && containsWhitelistedSubfolder.test(moduleName)) {
@@ -258,7 +258,7 @@ function evaluatePageData () {
 			}
 
 			/**********************
-			    Window & jQuery 
+			    Window & jQuery
 			**********************/
 
 			function processWindowVariable (globalProperty) {
@@ -306,12 +306,12 @@ function evaluatePageData () {
 							processWindowVariable(thirdPartyGlobal);
 						} else if (Type(globalValue) === "object") {
 							var containsFunction = false;
-							
+
 							/* Recursively check objects members for functions. */
 							(function findFunctions (globalValue) {
 								var isWindowAlias = globalValue && globalValue.chrome && globalValue.webkitURL;
 
-								/* Don't descend through window aliases (which have a .document property) or DOM elements. Further, 
+								/* Don't descend through window aliases (which have a .document property) or DOM elements. Further,
 								   only proceed with recursion if we've spent less than 50ms descending into this global variable. We
 								   do this to dumbly avoid infinite recursion resulting from properties that refer to one another. */
 								if ((!isWindowAlias && globalValue.nodeType === undefined) && ((Date.now() - descentStart) < 50)) {
@@ -394,7 +394,7 @@ function filterPageData (data) {
 
 		data.modules.forEach(function(val) {
 			/* If we match a module that has already been exposed on jQuery or window, drop it to avoid duplicates;
-			   the goal of our module sniffing is to find modules that are hidden inside an anonymous scope and 
+			   the goal of our module sniffing is to find modules that are hidden inside an anonymous scope and
 			   don't reveal themselves anywhere. */
 			var isUnique = true;
 
@@ -416,7 +416,7 @@ function filterPageData (data) {
 				[ Page.libs.jQuery[device], Page.libs.window[device] ].forEach(function(j, i) {
 					j.forEach(function(k) {
 						/* Strip the prefixes from the jQuery data cache. */
-						if (j === 0) { 
+						if (j === 0) {
 							k = k.split(".")[k.split(".").length - 1];
 						}
 
@@ -430,7 +430,7 @@ function filterPageData (data) {
 
 			if (isUnique) {
 				if (isjQueryPlugin) {
-					/* (We get to this point when a jQuery plugin has been required without a globally exposed jQuery global.) 
+					/* (We get to this point when a jQuery plugin has been required without a globally exposed jQuery global.)
 					   When transferring this item from the modules list to the jQuery list, we classify the variable as both a
 					   jQuery utility and a jQuery fn variable since we have no way of actually determining which it really is. */
 					Page.libs.jQuery[device].push("$." + val);
@@ -456,7 +456,7 @@ function filterPageData (data) {
 			/* Strip query strings and protocols from script urls. */
 			var pageHostname = URL.parse(val, false, true).hostname;
 
-			/* Strip www subdomains to normalize direct lookup matches. */ 
+			/* Strip www subdomains to normalize direct lookup matches. */
 			if (/^www\./.test(pageHostname)) {
 				pageHostname = pageHostname.replace("www.", "");
 			}
@@ -494,7 +494,7 @@ function reportPageData () {
 	jQuery.each(Page.libs, function (dataType, data) {
 		jQuery.each(data, function(deviceType, deviceData) {
 			/* Reduce all arrays to unique matches, and truncate them to 75 results max (in case someone is trying to sabotage our results). */
-			Page.libs[dataType][deviceType] = Page.libs[dataType][deviceType].filter(function(val, i, self) { 
+			Page.libs[dataType][deviceType] = Page.libs[dataType][deviceType].filter(function(val, i, self) {
 		    	return self.indexOf(val) === i;
 			}).slice(0, 75);
 
@@ -544,8 +544,8 @@ if (!/^https?:\/\//i.test(Page.url)) {
 function connectToPage () {
 	/* Note: --ssl-protocol option is used to force Phantom to connect to sites that use outdated versions of TLS, e.g. tumblr.com. */
 	Phantom.create(
-		"--ssl-protocol=any", 
-		{ 
+		"--ssl-protocol=any",
+		{
 			onExit: function (code) {
 				if (code !== 0) {
 					out(false, "phantom", "crash");
@@ -581,7 +581,7 @@ function connectToPage () {
 
 				/* When a page is requested, but before it has begun loading, inject scripts that modify runtime globals. */
 				pageInstance.set("onInitialized", injectIntoPage);
-				pageInstance.set("onLoadStarted", function() { 
+				pageInstance.set("onLoadStarted", function() {
 					out(true, "downloading...");
 				});
 
