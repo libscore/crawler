@@ -53,7 +53,7 @@ function out (success, stage, message) {
 
 function crawl (site, callback) {
 	var spawn = require("child_process").spawn;
-	var crawler = spawn("node", [ "crawler.js", site.url, site.rank ]);
+	var crawler = spawn("node", [ "crawler.js", site.domain, site.rank ]);
 	var finished = false;
 
 	setTimeout(function() {
@@ -67,20 +67,20 @@ function crawl (site, callback) {
 
 		switch (code) {
 			case 0:
-				out(true, "Crawl", "succeeded " + site.url);
+				out(true, "Crawl", "succeeded " + site.domain);
 			callback();
 
 				break;
 
 			case 1:
-				out(false, "Crawl", "failed " + site.url);
+				out(false, "Crawl", "failed " + site.domain);
 				//failedSites.push(site);
 				callback('Crawl failed');
 
 				break;
 
 			case null:
-				out("false", "Crawl", "failed (error: killed) " + site.url);
+				out("false", "Crawl", "failed (error: killed) " + site.domain);
 				callback('Crawl failed - killed');
 				//failedSites.push(site);
 				break;
