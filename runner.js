@@ -9,24 +9,22 @@ var kue = require('kue');
 var cluster = require('cluster');
 
 /*****************
-    Queue
-*****************/
-
-var jobs = kue.createQueue({
-	redis: { host: 'crawl-queue' }
-});
-var clusterWorkerSize = require('os').cpus().length;
-
-/*****************
     Arguments
 *****************/
 
 var Arguments = {
-		concurrency: process.argv[2],
-		sitesFile: process.argv[3],
-		siteOffsetStart: process.argv[4],
-		siteOffsetEnd: process.argv[5]
-	};
+	startTime: process.argv[2],
+	redisHost: process.argv[3]
+};
+
+/*****************
+    Queue
+*****************/
+
+var jobs = kue.createQueue({
+	redis: { host: Arguments.redisHost }
+});
+var clusterWorkerSize = require('os').cpus().length;
 
 /*****************
     Variables
@@ -112,8 +110,7 @@ function spawnCrawls () {
 	  }
 	} else {
 
-		jobs.process('website', 3, function(job, done){
-			console.log(job.data);
+		jobs.process('website', 3, function(job, done) {
 			crawl(job.data, done);
 		});
 	}
