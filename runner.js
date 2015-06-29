@@ -9,20 +9,11 @@ var kue = require('kue');
 var cluster = require('cluster');
 
 /*****************
-    Arguments
-*****************/
-
-var Arguments = {
-	startTime: process.argv[2],
-	redisHost: process.argv[3]
-};
-
-/*****************
     Queue
 *****************/
 
 var jobs = kue.createQueue({
-	redis: { host: Arguments.redisHost }
+	redis: { host: '45.55.17.121' }
 });
 var clusterWorkerSize = require('os').cpus().length;
 
