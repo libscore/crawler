@@ -2,11 +2,9 @@
     Libraries
 ****************/
 
-var FS = require("fs");
-var Colors = require("colors");
-var Async = require("async");
+var child_process = require('child_process');
+var colors = require("colors");
 var kue = require('kue');
-var cluster = require('cluster');
 
 /*****************
     Queue
@@ -17,22 +15,17 @@ var jobs = kue.createQueue({
 });
 var clusterWorkerSize = require('os').cpus().length;
 
-/*****************
-    Variables
-*****************/
-
 var CRAWL_TIMEOUT = 60000;
+var CONCURRENCY = 3;
 
-var sites = [],
-	totalSites = 0,
-	failedSites = [];
 
-/*****************
-    Utilities
-*****************/
+out(true, "Running");
+jobs.process('website', CONCURRENCY, function(job, done) {
+	crawl(job.data, done);
+});
 
-/* Console and REST status reporting. */
-function out (success, stage, message) {
+
+function out(success, stage, message) {
 	stage = stage.toString().toUpperCase();
 	message = message || "";
 
@@ -47,70 +40,28 @@ function out (success, stage, message) {
 	}
 }
 
-/*************
-     Main
-*************/
+function crawl(site, callback) {
+	var crawler = child_process.spawn("node", [ "crawler.js", site.domain, site.rank ]);
 
-function crawl (site, callback) {
-	var spawn = require("child_process").spawn;
-	var crawler = spawn("node", [ "crawler.js", site.domain, site.rank ]);
-	var finished = false;
-
-	setTimeout(function() {
-		if (!finished) {
-			require('child_process').exec("kill -9 " + crawler.pid);
-		}
+	var killTimer = setTimeout(function() {
+		crawler.kill();
 	}, CRAWL_TIMEOUT);
 
 	crawler.on("close", function (code) {
-		finished = true;
-
+		clearTimeout(killTimer);
 		switch (code) {
 			case 0:
 				out(true, "Crawl", "succeeded " + site.domain);
-			callback();
-
+				callback();
 				break;
-
 			case 1:
 				out(false, "Crawl", "failed " + site.domain);
-				//failedSites.push(site);
 				callback('Crawl failed');
-
 				break;
-
 			case null:
 				out("false", "Crawl", "failed (error: killed) " + site.domain);
 				callback('Crawl failed - killed');
-				//failedSites.push(site);
 				break;
 		}
-
 	});
 }
-
-function spawnCrawls () {
-	function reportCrawlsDone() {
-		out(true, "Failed sites", failedSites || "none");
-		out(true, "Stats", (totalSites - failedSites.length) + "/" + totalSites + " sites succeeded");
-		out(true, "Done");
-	}
-	if (cluster.isMaster) {
-	  for (var i = 0; i < clusterWorkerSize; i++) {
-	    cluster.fork();
-	  }
-	} else {
-
-		jobs.process('website', 3, function(job, done) {
-			crawl(job.data, done);
-		});
-	}
-
-}
-
-/****************
-      Init
-****************/
-
-out(true, "Running");
-spawnCrawls();

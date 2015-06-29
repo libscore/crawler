@@ -4,7 +4,6 @@
   "version": "2.0.0",
   "dependencies": {
     "async": "^1.2.1",
-    "cluster": "^0.7.7",
     "colors": "^1.1.2",
     "jquery": "latest",
     "jsdom": "^3.0.0",
