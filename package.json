@@ -1,17 +1,18 @@
 {
-  "name": "crawler",
-  "version": "1.0.0",
+  "name": "libscore-crawler",
+  "description": "Crawler for Libscore",
+  "version": "2.0.0",
   "dependencies": {
-    "async": "latest",
-    "bull": "^0.1.10",
+    "async": "^1.2.1",
     "cluster": "^0.7.7",
-    "colors": "latest",
+    "colors": "^1.1.2",
     "jquery": "latest",
     "jsdom": "^3.0.0",
-    "kue": "^0.8.9",
-    "phantom": "latest",
-    "redis": "^0.12.1",
-    "url": "latest",
+    "kue": "^0.9.3",
+    "phantom": "^0.7.2",
+    "url": "^0.10.3",
     "weak": "^0.3.3"
-  }
+  },
+  "repository": "git@github.com:libscore/crawler.git",
+  "private": true
 }
