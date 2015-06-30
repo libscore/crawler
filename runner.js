@@ -1,5 +1,4 @@
 var child_process = require('child_process');
-var Tail = require('tail').Tail;
 var kue = require('kue');
 var request = require('request');
 
@@ -18,16 +17,6 @@ jobs.process('website', CONCURRENCY, function(job, done) {
   crawl(job.data, done);
 });
 
-var dumpFile = new Tail('dump.json');
-dumpFile.on('line', function(line) {
-  var message = JSON.parse(line);
-  request({
-    method: 'POST',
-    uri: 'http://api.libscore.com/sites/' + message.id,
-    json: message.data
-  })
-});
-
 setTimeout(function() {
   jobs.shutdown(CRAWL_TIMEOUT, function(err) {
     process.exit(0);
@@ -37,7 +26,7 @@ setTimeout(function() {
 
 
 function crawl(site, callback) {
-  var crawler = child_process.spawn("node", [ "crawler.js", site.domain, site.rank, site.id ]);
+  var crawler = child_process.spawn("node", [ "crawler.js", site.domain, site.id ]);
 
   var killTimer = setTimeout(function() {
     crawler.kill();
@@ -47,15 +36,15 @@ function crawl(site, callback) {
     clearTimeout(killTimer);
     switch (code) {
       case 0:
-        console.log("Crawl succeeded " + site.domain);
+        console.log("Success " + site.domain);
         callback();
         break;
       case 1:
-        console.log("Crawl failed " + site.domain);
+        console.log("Failed " + site.domain);
         callback('Crawl failed');
         break;
       case null:
-        console.log("Crawl failed (error: killed) " + site.domain);
+        console.log("Killed " + site.domain);
         callback('Crawl failed - killed');
         break;
     }

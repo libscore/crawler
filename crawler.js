@@ -8,6 +8,7 @@ var URL = require("url");
 var Phantom = require("phantom");
 var Colors = require("colors");
 var FS = require("fs");
+var request = require('request');
 
 /*****************
     Constants
@@ -45,8 +46,7 @@ process.on("exit", disconnectFromPage);
 
 var Arguments = {
 		url: process.argv[2],
-		rank: process.argv[3],
-		id: process.argv[4],
+		id: process.argv[3],
 		isDump: !!process.argv[3]
 	};
 
@@ -501,19 +501,13 @@ function reportPageData () {
 	Libs.desktop = Libs.desktop.concat(Page.libs["window"]["desktop"]).concat(Page.libs["jQuery"]["desktop"]);
 	Libs.mobile = Libs.mobile.concat(Page.libs["window"]["mobile"]).concat(Page.libs["jQuery"]["mobile"]);
 
-	var results = { url: Arguments.url, rank: Arguments.rank, id: Arguments.id, data: { libs: Libs, scripts: Page.libs.scripts } };
+	var results = { url: Arguments.url, id: Arguments.id, data: { libs: Libs, scripts: Page.libs.scripts } };
 	if (Arguments.isDump) {
-		var dumpData = JSON.stringify(results);
-
-		FS.appendFile("dump.json", dumpData + "\n", function(error) {
-			if (error) {
-		        out(false, "dump", error);
-			} else {
-				out(true, "dump", "written");
-
-				reportPageDataDone();
-			}
-		});
+	  request({
+	    method: 'POST',
+	    uri: 'http://api.libscore.com/sites/' + message.id,
+	    json: results
+	  })
 	} else {
 		out(true, "dump", "not requested");
 		reportPageDataDone();
