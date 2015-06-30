@@ -3,7 +3,7 @@ var kue = require('kue');
 var request = require('request');
 
 var CRAWL_TIMEOUT = 60000;
-var CONCURRENCY = 3;
+var CONCURRENCY = 10;
 
 
 console.log("Running");
