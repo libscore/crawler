@@ -46,6 +46,7 @@ process.on("exit", disconnectFromPage);
 var Arguments = {
 		url: process.argv[2],
 		rank: process.argv[3],
+		id: process.argv[4],
 		isDump: !!process.argv[3]
 	};
 
@@ -500,8 +501,9 @@ function reportPageData () {
 	Libs.desktop = Libs.desktop.concat(Page.libs["window"]["desktop"]).concat(Page.libs["jQuery"]["desktop"]);
 	Libs.mobile = Libs.mobile.concat(Page.libs["window"]["mobile"]).concat(Page.libs["jQuery"]["mobile"]);
 
+	var results = { url: Arguments.url, rank: Arguments.rank, id: Arguments.id, data: { libs: Libs, scripts: Page.libs.scripts } };
 	if (Arguments.isDump) {
-		var dumpData = JSON.stringify({ url: Arguments.url, rank: Arguments.rank, data: { libs: Libs, scripts: Page.libs.scripts } });
+		var dumpData = JSON.stringify(results);
 
 		FS.appendFile("dump.json", dumpData + "\n", function(error) {
 			if (error) {
