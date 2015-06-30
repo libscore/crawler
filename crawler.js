@@ -504,7 +504,7 @@ function reportPageData () {
 	if (Arguments.isDump) {
 	  request({
 	    method: 'POST',
-	    uri: 'http://45.55.11.15/sites/' + Arguments.url,
+	    uri: 'http://45.55.11.15/v1/sites/' + Arguments.url,
 	    json: { libs: Libs, scripts: Page.libs.scripts }
 	  })
 	} else {
