@@ -16,7 +16,6 @@ var jobs = kue.createQueue({
 jobs.process('website', CONCURRENCY, function(job, done) {
   crawl(job.data, done);
 });
-jobs.watchStuckJobs();
 
 setTimeout(function() {
   jobs.shutdown(CRAWL_TIMEOUT, function(err) {
