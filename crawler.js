@@ -501,12 +501,11 @@ function reportPageData () {
 	Libs.desktop = Libs.desktop.concat(Page.libs["window"]["desktop"]).concat(Page.libs["jQuery"]["desktop"]);
 	Libs.mobile = Libs.mobile.concat(Page.libs["window"]["mobile"]).concat(Page.libs["jQuery"]["mobile"]);
 
-	var results = { url: Arguments.url, id: Arguments.id, data: { libs: Libs, scripts: Page.libs.scripts } };
 	if (Arguments.isDump) {
 	  request({
 	    method: 'POST',
-	    uri: 'http://api.libscore.com/sites/' + message.id,
-	    json: results
+	    uri: 'http://api.libscore.com/sites/' + Arguments.url,
+	    json: { libs: Libs, scripts: Page.libs.scripts }
 	  })
 	} else {
 		out(true, "dump", "not requested");
