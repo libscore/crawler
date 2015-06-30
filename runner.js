@@ -9,7 +9,7 @@ var CONCURRENCY = 3;
 console.log("Running");
 var jobs = kue.createQueue({
   redis: {
-    host: 'api.libscore.com',
+    host: '45.55.11.15',
     auth: process.env.LIBSCORE_REDIS_PASS
   }
 });
