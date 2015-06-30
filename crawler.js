@@ -529,6 +529,7 @@ function connectToPage () {
 	/* Note: --ssl-protocol option is used to force Phantom to connect to sites that use outdated versions of TLS, e.g. tumblr.com. */
 	Phantom.create(
 		"--ssl-protocol=any",
+		"--disk-cache=yes",
 		{
 			onExit: function (code) {
 				if (code !== 0) {
