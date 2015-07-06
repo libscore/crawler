@@ -520,7 +520,15 @@ function reportPageData () {
 	    method: 'POST',
 	    uri: 'http://45.55.11.15/v1/sites/' + Arguments.url,
 	    json: { libs: Libs, scripts: Page.libs.scripts }
-	  }, reportPageDataDone);
+	  }, function(err, response) {
+	  	if (err) {
+	  		out(false, "dump", err.message);
+	  	} else if (response.statusCode !== 200) {
+	  		out(false, "dump", 'Bad status ' + response.statusCode);
+	  	} else {
+	  		reportPageDataDone();
+	  	}
+	  });
 	} else {
 		out(true, "dump", "not requested");
 		reportPageDataDone();
