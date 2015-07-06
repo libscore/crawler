@@ -133,6 +133,17 @@ var Page = {
 		}
 	};
 
+function injectIntoPage () {
+	/******************
+	    Injections
+	******************/
+
+	/* Shim the Function.bind method that React requires but Phantom's version of webkit does not have. */
+	pageInstance.injectJs("./phantomjs-react-shim.js", function(data) {
+		out(true, "inject", "react.js shim");
+	});
+}
+
 function evaluatePageData () {
 	/* Wrap all in-browser logic in a try/catch so that we can return fatal errors to Phantom for output. */
 	try {
@@ -567,6 +578,8 @@ function connectToPage () {
 				   Callbacks: General
 				***********************/
 
+				/* When a page is requested, but before it has begun loading, inject scripts that modify runtime globals. */
+				pageInstance.set("onInitialized", injectIntoPage);
 				pageInstance.set("onLoadStarted", function() {
 					out(true, "downloading...");
 				});
