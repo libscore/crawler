@@ -19,7 +19,7 @@ var PHANTOM_USERAGENT_DESKTOP = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) 
 /* iPhone 4 useragent. */
 var PHANTOM_USERAGENT_MOBILE = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5";
 /* Time (in ms) that each of the page's individual resources must load within before its request is forcefully cancelled. */
-var PHANTOM_RESOURCE_TIMEOUT = 15000;
+var PHANTOM_RESOURCE_TIMEOUT = 10000;
 /* Time (in ms) to wait after DOMContentLoaded for asynchronous scripts to load. */
 /* Note: There's no foolproof way of doing this, so we choose 3000ms, which sites load within 99% of the time. */
 var PHANTOM_EVALUATE_DELAY = 3000;
@@ -139,6 +139,7 @@ function evaluatePageData () {
 		/* Note: The bulk of variable evaluation happens within the page's environment since node-phantom's JSON stringification
 		   process between its submodules causes functions to lose their properties. */
 		return (function() {
+
 			/****************
 			    Variables
 			****************/
@@ -150,7 +151,8 @@ function evaluatePageData () {
 					"jQuery", "$", "bootstrap", "socket", "impress", "yepnope",
 					"hljs", "videojs", "timeline", "ace", "respond", "picturefill",
 					"key" /* keymaster */, "alertify", "scrollReveal", "imagesLoaded",
-					"responsiveNav", "katex", "riot"
+					"responsiveNav", "katex", "riot", "Trianglify", "$LAB", "lazySizes",
+					"spf"
 				];
 
 			var evaluatedData = {
@@ -275,6 +277,7 @@ function evaluatePageData () {
 			}
 
 			var thirdPartyGlobals = Object.keys(window);
+
 			for (var i = 0; i < thirdPartyGlobals.length; i++) {
 				var thirdPartyGlobal = { key: thirdPartyGlobals[i], value: window[thirdPartyGlobals[i]] };
 
