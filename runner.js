@@ -3,8 +3,9 @@ var kue = require('kue');
 var request = require('request');
 
 var CRAWL_TIMEOUT = 60000;
-var CONCURRENCY = 200;
+var CONCURRENCY = 100;
 
+var timeout = false;
 
 console.log("Running");
 var jobs = kue.createQueue({
@@ -18,10 +19,13 @@ jobs.process('website', CONCURRENCY, function(job, done) {
 });
 
 setTimeout(function() {
+  var timeout = true;
   jobs.shutdown(CRAWL_TIMEOUT, function(err) {
-    process.exit(0);
+    // Exiting process or even trying to kill them is not enough to recycle
+    // stuck phantom instances
+    child_process.spawn("shutdown", ['-r', 'now']);
   });
-}, 60*60*1000);  // Kill ourselves after an hour to prevent long running process issues
+}, 10*60*1000);  // Kill ourselves after 10 minutes to prevent long running process issues
 
 
 function crawl(job, callback) {
