@@ -25,10 +25,10 @@ setTimeout(function() {
 
 
 function crawl(job, callback) {
-  var crawler = child_process.spawn("node", [ "crawler.js", job.data.domain, job.data.id ]);
+  var crawler = child_process.spawn("node", [ "crawler.js", job.data.domain, job.data.id ], { detached: true });
 
   var killTimer = setTimeout(function() {
-    crawler.kill('SIGKILL');
+    process.kill(-crawler.pid, 'SIGKILL');
   }, CRAWL_TIMEOUT);
 
   crawler.on("close", function (code) {
