@@ -1,9 +1,10 @@
 var child_process = require('child_process');
 var kue = require('kue');
+var os = require('os');
 var request = require('request');
 
 var CRAWL_TIMEOUT = 60000;
-var CONCURRENCY = 100;
+var CONCURRENCY = os.cpus().length * 3;
 
 var timeout = false;
 
@@ -29,10 +30,10 @@ setTimeout(function() {
 
 
 function crawl(job, callback) {
-  var crawler = child_process.spawn("node", [ "crawler.js", job.data.domain, job.data.id ], { detached: true });
+  var crawler = child_process.spawn("node", [ "crawler.js", job.data.domain, job.data.id ]);
 
   var killTimer = setTimeout(function() {
-    process.kill(-crawler.pid, 'SIGKILL');
+    crawler.kill();
   }, CRAWL_TIMEOUT);
 
   crawler.on("close", function (code) {
