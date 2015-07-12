@@ -516,19 +516,29 @@ function reportPageData () {
 	Libs.mobile = Libs.mobile.concat(Page.libs["window"]["mobile"]).concat(Page.libs["jQuery"]["mobile"]);
 
 	if (Arguments.isDump) {
-	  request({
-	    method: 'POST',
-	    uri: 'http://45.55.11.15/v1/sites/' + Arguments.url,
-	    json: { libs: Libs, scripts: Page.libs.scripts }
-	  }, function(err, response) {
-	  	if (err) {
-	  		out(false, "dump", err.message);
-	  	} else if (response.statusCode !== 200) {
-	  		out(false, "dump", 'Bad status ' + response.statusCode);
-	  	} else {
-	  		reportPageDataDone();
-	  	}
-	  });
+		var results = { url: Arguments.url, id: Arguments.id, data: { libs: Libs, scripts: Page.libs.scripts } };
+		var dumpData = JSON.stringify(results);
+		FS.appendFile("dump.json", dumpData + "\n", function(error) {
+			if (error) {
+				out(false, 'dump', error);
+			} else {
+				out(true, 'dump', 'written');
+				reportPageDataDone();
+			}
+		});
+	  // request({
+	  //   method: 'POST',
+	  //   uri: 'http://45.55.11.15/v1/sites/' + Arguments.url,
+	  //   json: { libs: Libs, scripts: Page.libs.scripts }
+	  // }, function(err, response) {
+	  // 	if (err) {
+	  // 		out(false, "dump", err.message);
+	  // 	} else if (response.statusCode !== 200) {
+	  // 		out(false, "dump", 'Bad status ' + response.statusCode);
+	  // 	} else {
+	  // 		reportPageDataDone();
+	  // 	}
+	  // });
 	} else {
 		out(true, "dump", "not requested");
 		reportPageDataDone();

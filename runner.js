@@ -4,7 +4,7 @@ var os = require('os');
 var request = require('request');
 
 var CRAWL_TIMEOUT = 60000;
-var CONCURRENCY = os.cpus().length * 3;
+var CONCURRENCY = os.cpus().length * 2;
 
 var timeout = false;
 
