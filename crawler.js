@@ -3,7 +3,7 @@
 ****************/
 
 /* jQuery must be initialized with a window object, hence the jsdom shim. */
-var jQuery = require("jquery")(require("jsdom").jsdom().parentWindow);
+var jQuery = require("jquery")(require("jsdom").jsdom().defaultView);
 var URL = require("url");
 var Phantom = require("phantom");
 var Colors = require("colors");

@@ -3,15 +3,18 @@
   "description": "Crawler for Libscore",
   "version": "2.0.0",
   "dependencies": {
-    "async": "^1.2.1",
+    "async": "^1.5.2",
     "colors": "^1.1.2",
-    "jquery": "latest",
-    "jsdom": "^3.0.0",
-    "kue": "^0.9.3",
-    "phantom": "^0.7.2",
-    "request": "^2.58.0",
-    "url": "^0.10.3",
-    "weak": "^0.3.3"
+    "jquery": "^2.2.0",
+    "jsdom": "^8.0.2",
+    "kue": "^0.10.5",
+    "phantom": "^0.8.4",
+    "request": "^2.69.0",
+    "url": "^0.11.0",
+    "weak": "^1.0.1"
+  },
+  "engines": {
+    "node": "^5.3"
   },
   "repository": "git@github.com:libscore/crawler.git",
   "private": true
